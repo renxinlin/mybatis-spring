@@ -1,0 +1,4 @@
+http\://mybatis.org/schema/mybatis-spring=org.mybatis.spring.config.NamespaceHandler
+
+# mybatis的所有相关schema的解析交给org.mybatis.spring.config.NamespaceHandler
+# 用来解析mybatis.xml
