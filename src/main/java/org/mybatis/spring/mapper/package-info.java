@@ -16,5 +16,7 @@
 /**
  * Contains classes for automatically building MyBatis mapper proxy classes at
  * application startup.
+ *
+ * 主要的左右就是扫描mapper接口
  */
 package org.mybatis.spring.mapper;

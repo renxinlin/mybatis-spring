@@ -91,6 +91,26 @@ import org.springframework.util.StringUtils;
  * @see MapperFactoryBean
  * @see ClassPathMapperScanner
  */
+
+
+/**
+ * 参考源码中英文注释给出的用例;其作用同@MapperScan但实现机制不同
+ * 该类是通过BeanDefinitionRegistryPostProcessor实现
+ * 而mapperscan是通过ImportBeanDefinitionRegistry实现
+ *
+ * 两者区别在于BeanDefinitionRegistryPostProcessor自己处理BD
+ * 而ImportBeanDefinitionRegistry 是spring启动的时候ConfigurationClassPostProcessor后置BDRPP的一个更细的处理点
+ * 具体参考spring源码
+ *
+ * ==============================================================
+ * <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+ *  *       <property name="basePackage" value="org.mybatis.spring.sample.mapper" />
+ *  *       <!-- optional unless there are multiple session factories defined -->
+ *  *       <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+ *  *   </bean>
+ * ==============================================================
+ *
+ */
 public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
 
   private String basePackage;
@@ -300,6 +320,7 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
     if (this.processPropertyPlaceHolders) {
+      // 处理占位符
       processPropertyPlaceHolders();
     }
 
@@ -313,7 +334,9 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
     scanner.setSqlSessionTemplateBeanName(this.sqlSessionTemplateBeanName);
     scanner.setResourceLoader(this.applicationContext);
     scanner.setBeanNameGenerator(this.nameGenerator);
+    // 注册特殊注解和特殊接口的过滤器用来生成BD
     scanner.registerFilters();
+    // 扫描生成bd
     scanner.scan(StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
   }
 

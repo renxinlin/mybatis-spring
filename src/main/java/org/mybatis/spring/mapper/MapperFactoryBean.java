@@ -51,8 +51,16 @@ import org.springframework.beans.factory.FactoryBean;
  *
  * @see SqlSessionTemplate
  */
-public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements FactoryBean<T> {
 
+/**
+ * 所有mapper Bean 的FactoryBean
+ * 其getObject获取的是所有mapper的代理类
+ * 代理类的实现是MapperProxy
+ *
+ * @param <T>
+ */
+public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements FactoryBean<T> {
+  // mapper接口
   private Class<T> mapperInterface;
 
   private boolean addToConfig = true;
@@ -68,6 +76,9 @@ public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements Factor
   /**
    * {@inheritDoc}
    */
+  /**
+   * SqlSessionDaoSupport被调用时候执行该方法
+   */
   @Override
   protected void checkDaoConfig() {
     super.checkDaoConfig();
@@ -75,9 +86,28 @@ public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements Factor
     notNull(this.mapperInterface, "Property 'mapperInterface' is required");
 
     Configuration configuration = getSqlSession().getConfiguration();
+    /**
+     * MapperRegistry包含所有的 mapper 和 MapperProxyFactory【包含原生方法【to programer simple interface method】 和对应的mybatis执行引擎交互方法MapperMethod】
+     */
     if (this.addToConfig && !configuration.hasMapper(this.mapperInterface)) {
       try {
-        // 初始化MBD对应的类
+        // 添加 mapperInterface 到 configuration 并且解析mapper Interface  【mybatis内容参见mybatis翻译】
+
+        /**
+         *
+         * mapperProxy1       mapperProxy2      mapperProxy3
+         *
+         *              -->        |        <---
+         *                  Configuration
+         *                        |
+         *                  {  内部细节  }
+         *
+         * mybatis的核心为Configuration,它是一个重量级类包含了所有mapper各方法相关信息以及自身配置信息
+         * 是的各mapperProxy轻量化 ;非常好的一种设计模式
+         *
+         *
+         *
+         */
         configuration.addMapper(this.mapperInterface);
       } catch (Exception e) {
         logger.error("Error while adding the mapper '" + this.mapperInterface + "' to configuration.", e);
@@ -90,6 +120,11 @@ public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements Factor
 
   /**
    * {@inheritDoc}
+   */
+  /**
+   * 当spring 单例缓冲池加载mapperInterface的实例调用该方法，后期该实例直接由spring单例缓冲池获取
+   * @return
+   * @throws Exception
    */
   @Override
   public T getObject() throws Exception {
@@ -143,6 +178,9 @@ public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements Factor
    *
    * @param addToConfig
    */
+  /*
+  * 该属性的意图就是所有mapperScan都要补加入Mybatis的Configuration
+  * */
   public void setAddToConfig(boolean addToConfig) {
     this.addToConfig = addToConfig;
   }

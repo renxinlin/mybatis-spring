@@ -53,6 +53,10 @@ import org.springframework.util.StringUtils;
  * @see MapperFactoryBean
  * @since 1.2.0
  */
+
+/**
+ * 继承ClassPathBeanDefinitionScanner完成Bd生成 并且修改BD实现为MapperFactoryBean (其getObject 获取的是代理对象)
+ */
 public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
   private boolean addToConfig = true;
@@ -188,11 +192,12 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
       definition.getConstructorArgumentValues().addGenericArgumentValue(definition.getBeanClassName()); // issue #59
       // 改变了mapper的实现为MapperFactoryBean
       definition.setBeanClass(this.mapperFactoryBean.getClass());
-      // 添加addToConfig
+      // 添加addToConfig[mybatis配置中心Configuration,在MapperFactoryBean中使用]
       definition.getPropertyValues().add("addToConfig", this.addToConfig);
 
       boolean explicitFactoryUsed = false;
       if (StringUtils.hasText(this.sqlSessionFactoryBeanName)) {
+        // TODO PropertyValues add在spring中涉及到的注入特性
         definition.getPropertyValues().add("sqlSessionFactory", new RuntimeBeanReference(this.sqlSessionFactoryBeanName));
         explicitFactoryUsed = true;
       } else if (this.sqlSessionFactory != null) {
