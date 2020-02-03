@@ -32,3 +32,5 @@ Essentials
  笔者目前在做的项目包括spring ,mybatis,tomcat 翻译 mybatis-plus理解以及参考MP撰写ORM框架
  
  
+ 翻译规则:在原有代码与注释之间新增翻译;
+ 如果存在翻译错误，欢迎指正
