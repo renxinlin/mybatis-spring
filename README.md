@@ -27,3 +27,8 @@ Essentials
  http://mybatis.org/spring/zh/sample.html
  
  
+ 
+ 如果有读者愿意加入作者的项目的，欢迎联系2284057845@qq.com
+ 笔者目前在做的项目包括spring ,mybatis,tomcat 翻译 mybatis-plus理解以及参考MP撰写ORM框架
+ 
+ 
