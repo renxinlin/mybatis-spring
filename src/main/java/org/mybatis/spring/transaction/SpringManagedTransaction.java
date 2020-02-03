@@ -42,6 +42,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author Hunter Presnall
  * @author Eduardo Macarron
  */
+
+/**
+ * If Spring's transaction handling is active it will no-op all commit/rollback/close calls
+ *  * assuming that the Spring transaction manager will do the job.
+ *  如果spring事务被激活则该事务不起作用
+ */
 public class SpringManagedTransaction implements Transaction {
 
   private static final Log LOGGER = LogFactory.getLog(SpringManagedTransaction.class);
@@ -79,6 +85,12 @@ public class SpringManagedTransaction implements Transaction {
    * so we need to no-op that calls.
    */
   private void openConnection() throws SQLException {
+    // 既然是事务则从当前线程获取连接
+//    通过DataSourceUtils.getConnection()从ThreadLocal中获取当前事务的jdbc connection, 然后在该jdbc connection上执行sql
+    /**
+     * DataSourceUtils.getConnection()它首先查看当前是否存在事务管理上下文，并尝试从事务管理上下文获取连接，如果获取失败，直接从数据源中获取连接。在获取连接后，如果当前拥有事务上下文，则将连接绑定到事务上下文中。
+     * 如果处于事务上下文中，那么开发者不需要显示关闭或者释放连接，但是如果 DataSourceUtils 在没有事务上下文的方法中使用 getConnection() 获取连接，依然会造成数据连接泄漏，这个时候就需要显示release
+     */
     this.connection = DataSourceUtils.getConnection(this.dataSource);
     this.autoCommit = this.connection.getAutoCommit();
     this.isConnectionTransactional = DataSourceUtils.isConnectionTransactional(this.connection, this.dataSource);
@@ -132,6 +144,7 @@ public class SpringManagedTransaction implements Transaction {
    */
   @Override
   public Integer getTimeout() throws SQLException {
+    // 当前线程上下文获取连接holder+
     ConnectionHolder holder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
     if (holder != null && holder.hasTimeout()) {
       return holder.getTimeToLiveInSeconds();

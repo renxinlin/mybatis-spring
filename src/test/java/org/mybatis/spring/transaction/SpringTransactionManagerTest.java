@@ -26,6 +26,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 public final class SpringTransactionManagerTest extends AbstractMyBatisSpringTest {
 
+  /**
+   * 优先级在平台事务管理器之下[DataSourceTransactionManager]
+   * @throws Exception
+   */
   @Test
   public void shouldNoOpWithTx() throws Exception {
     DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
@@ -59,6 +63,11 @@ public final class SpringTransactionManagerTest extends AbstractMyBatisSpringTes
   //        txManager.commit(status);
   //    }
 
+
+  /**
+   * 自我管理事务提交成功
+   * @throws Exception
+   */
   @Test
   public void shouldManageWithNoTx() throws Exception {
     SpringManagedTransactionFactory transactionFactory = new SpringManagedTransactionFactory();
@@ -70,6 +79,10 @@ public final class SpringTransactionManagerTest extends AbstractMyBatisSpringTes
     assertTrue("should close the Connection", connection.isClosed());
   }
 
+  /**
+   * 自动提交不应该事务commit
+   * @throws Exception
+   */
   @Test
   public void shouldNotCommitWithNoTxAndAutocommitIsOn() throws Exception {
     SpringManagedTransactionFactory transactionFactory = new SpringManagedTransactionFactory();
@@ -82,6 +95,11 @@ public final class SpringTransactionManagerTest extends AbstractMyBatisSpringTes
     assertTrue("should close the Connection", connection.isClosed());
   }
 
+  /**
+   * 无spring事务且无自动提交【创建事务设置autocommit不起作用;底层没有设置其为true依旧是默认值false】
+   * 可以提交事务
+   * @throws Exception
+   */
   @Test
   public void shouldIgnoreAutocommit() throws Exception {
     SpringManagedTransactionFactory transactionFactory = new SpringManagedTransactionFactory();

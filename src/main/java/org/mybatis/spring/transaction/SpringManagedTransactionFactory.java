@@ -29,6 +29,11 @@ import org.apache.ibatis.transaction.TransactionFactory;
  *
  * @author Hunter Presnall
  */
+
+
+/**
+ * 事务工厂
+ */
 public class SpringManagedTransactionFactory implements TransactionFactory {
 
   /**

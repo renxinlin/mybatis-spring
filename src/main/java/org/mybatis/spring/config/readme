@@ -1,1 +1,6 @@
 这个包是xml生成到BD的实现
+MapperScannerBeanDefinitionParser 解析xml
+NamespaceHandler由
+META-INF
+spring.handlers
+spring.schemas 指定标签以及标签解析类 具体如何配置这些就可以解析 参见spring翻译，spring源码这样处理

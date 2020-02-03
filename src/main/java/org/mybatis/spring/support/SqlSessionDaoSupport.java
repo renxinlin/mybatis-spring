@@ -38,18 +38,40 @@ import org.springframework.dao.support.DaoSupport;
  * @see #setSqlSessionTemplate
  * @see SqlSessionTemplate
  */
+
+/**
+ * 继承了spring的DaoSupport
+ * 非常重要的一个父类 这个类为所有的mapperfactoryBean提供了
+ * sqlSessionFactory 从而提供了sqlSessionTemplate[sqlSession]
+ * 所有的mapperFactorybean都继承了这个接口 从而实现了给mapper代理类注入sqlsession的能力
+ */
 public abstract class SqlSessionDaoSupport extends DaoSupport {
 
   private SqlSession sqlSession;
-
+  /**
+   * 是否调用外部的sqlsession
+   */
   private boolean externalSqlSession;
 
+  /**
+   * 一般项目中只需要配置SqlSessionFactory
+   * SqlSessionFactory 和 SqlSessionTemplate二配一【issue2 由于没采用spring的 SqlSessionTemplatebean 所以这里每个mapperFactoryBean都有一个自己的SqlSessionTemplate对象】
+   * @param sqlSessionFactory
+   */
   public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
     if (!this.externalSqlSession) {
       this.sqlSession = new SqlSessionTemplate(sqlSessionFactory);
     }
   }
 
+  /**
+   * 如果设置了SqlSessionTemplate则修改externalSqlSession值
+   * 需要结合 definition.getPropertyValues().add("sqlSessionFactory", this.sqlSessionFactory);
+   * 该方法优先于applyPropertyValues
+   * 也就是SqlSessionTemplate优先级》SqlSessionFactory
+   *
+   * @param sqlSessionTemplate
+   */
   public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
     this.sqlSession = sqlSessionTemplate;
     this.externalSqlSession = true;

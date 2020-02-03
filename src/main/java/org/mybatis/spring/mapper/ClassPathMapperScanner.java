@@ -195,7 +195,9 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
       // 添加addToConfig[mybatis配置中心Configuration,在MapperFactoryBean中使用]
       definition.getPropertyValues().add("addToConfig", this.addToConfig);
 
-      boolean explicitFactoryUsed = false;
+      // 这一段是关于sqlsession生成的配置策略
+      //  sqlSessionTemplateBeanName > sqlSessionTemplate 取代 sqlSessionFactoryBeanName > sqlSessionFactory
+      boolean explicitFactoryUsed = false; // 临时变量 控制日志输出，注入方式等等
       if (StringUtils.hasText(this.sqlSessionFactoryBeanName)) {
         // TODO PropertyValues add在spring中涉及到的注入特性
         definition.getPropertyValues().add("sqlSessionFactory", new RuntimeBeanReference(this.sqlSessionFactoryBeanName));
@@ -206,7 +208,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
       }
 
       if (StringUtils.hasText(this.sqlSessionTemplateBeanName)) {
-        if (explicitFactoryUsed) {
+        if (explicitFactoryUsed) { // 如果 sqlSessionFactoryBeanName 配置过了则报日志信息
           logger.warn("Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored.");
         }
         definition.getPropertyValues().add("sqlSessionTemplate", new RuntimeBeanReference(this.sqlSessionTemplateBeanName));
@@ -218,7 +220,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         definition.getPropertyValues().add("sqlSessionTemplate", this.sqlSessionTemplate);
         explicitFactoryUsed = true;
       }
-
+      // sqlSessionFactoryBeanName,,, sqlSessionTemplate都没有则 依赖注入
       if (!explicitFactoryUsed) {
         if (logger.isDebugEnabled()) {
           logger.debug("Enabling autowire by type for MapperFactoryBean with name '" + holder.getBeanName() + "'.");

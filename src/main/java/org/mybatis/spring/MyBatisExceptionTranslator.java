@@ -36,6 +36,10 @@ import org.springframework.transaction.TransactionException;
  *
  * @author Eduardo Macarron
  */
+
+/**
+ * 异常翻译器 转换异常 自行参阅
+ */
 public class MyBatisExceptionTranslator implements PersistenceExceptionTranslator {
 
   private final DataSource dataSource;
