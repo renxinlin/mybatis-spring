@@ -21,4 +21,9 @@ Essentials
  **以下为翻译心得**
  ----------
  
- mybatis spring 
+ 在site/zh下为官方提供的中文文档
+ 
+ 官方中文网站
+ http://mybatis.org/spring/zh/sample.html
+ 
+ 
